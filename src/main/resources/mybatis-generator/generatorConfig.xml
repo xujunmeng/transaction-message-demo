@@ -24,15 +24,16 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://10.180.3.203:3306/quotation" userId="ahs_user"
-                        password="1s186XMPRvB9bTY2" />
+                        connectionURL="jdbc:mysql://locahost:3306/transaction-message"
+                        userId="root"
+                        password="root" />
 
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false" />
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="com.aihuishou.opt.quotation.order.model.persistence"
-                            targetProject="../opt-quotation-order-model/src/main/java">
+        <javaModelGenerator targetPackage="com.company.project.biz.entity"
+                            targetProject="../transaction-message-demo/src/main/java">
             <property name="enableSubPackages" value="false" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
