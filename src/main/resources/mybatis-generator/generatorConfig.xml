@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <property name="autoDelimitKeywords" value="true" />
+        <property name="beginningDelimiter" value="`" />
+        <property name="endingDelimiter" value="`" />
+
+        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+
+        <!-- 自动为entity生成swagger2文档-->
+        <plugin type="mybatis.generator.plugins.GeneratorSwagger2Doc">
+            <property name="apiModelAnnotationPackage" value="io.swagger.annotations.ApiModel" />
+            <property name="apiModelPropertyAnnotationPackage" value="io.swagger.annotations.ApiModelProperty" />
+        </plugin>
+
+        <!-- 注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true" /><!-- 是否取消注释 -->
+            <property name="suppressDate" value="false" /> <!-- 是否生成注释代时间戳 -->
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://10.180.3.203:3306/quotation" userId="ahs_user"
+                        password="1s186XMPRvB9bTY2" />
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.aihuishou.opt.quotation.order.model.persistence"
+                            targetProject="../opt-quotation-order-model/src/main/java">
+            <property name="enableSubPackages" value="false" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="com.aihuishou.opt.quotation.order.mapper"
+                         targetProject="src/main/resources">
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.aihuishou.opt.quotation.order.persistence" targetProject="src/main/java">
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        <table tableName="quotation_order_settlement_property"  enableCountByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false">
+        </table>
+
+
+
+
+    </context>
+</generatorConfiguration>
