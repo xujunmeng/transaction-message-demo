@@ -13,14 +13,4 @@ public final class ProjectConstant {
      */
     public static final String BIZ_PACKAGE = BASE_PACKAGE+".biz";
 
-    /**
-     * entity实体包路径
-     */
-    public static final String ENTITY_PACKAGE = BIZ_PACKAGE+".entity";
-
-    /**
-     * token过期时间 8小时
-     */
-    public static int TOKEN_TIMEOUT = 8 * 60 * 60;
-
 }

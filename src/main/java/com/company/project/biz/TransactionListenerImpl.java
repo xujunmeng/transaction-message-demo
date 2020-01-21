@@ -25,14 +25,12 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class TransactionListenerImpl implements TransactionListener {
+
     @Resource
     private BusinessService businessService;
-
 
     @Override
     public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {

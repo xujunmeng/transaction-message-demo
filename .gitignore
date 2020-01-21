@@ -1,0 +1,13 @@
+# comment - this is ignored file list
+
+/**/target
+/**/.settings
+/**/bin
+/**/.classpath
+/.classpath
+/**/.project
+/**/*.iml
+/**/.idea/
+/**/.DS_Store
+/**/pom.xml.versionsBackup
+/test-output

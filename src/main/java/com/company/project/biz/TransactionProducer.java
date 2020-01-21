@@ -20,7 +20,6 @@ import com.alibaba.fastjson.JSON;
 import com.company.project.biz.entity.TransferRecord;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
@@ -28,14 +27,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 @Component
 public class TransactionProducer  implements InitializingBean {
+
     private static TransactionMQProducer producer = new TransactionMQProducer("please_rename_unique_group_name");
 
     @Resource
