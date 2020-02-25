@@ -1,7 +1,7 @@
 package com.company.project.biz.mapper;
 
 import com.company.project.biz.entity.TransferRecord;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -11,6 +11,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author chenyin
  * @since 2019-05-10
  */
-public interface TransferRecordMapper extends BaseMapper<TransferRecord> {
+public interface TransferRecordMapper {
 
+    int insert(TransferRecord transferRecord);
+
+    int selectCount(@Param("transactionId") String transactionId);
 }

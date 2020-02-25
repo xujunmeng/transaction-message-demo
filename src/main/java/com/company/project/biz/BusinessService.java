@@ -1,14 +1,12 @@
 package com.company.project.biz;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.company.project.biz.entity.TransferRecord;
 import com.company.project.biz.mapper.TransferRecordMapper;
 import com.company.project.biz.mapper.UserMapper;
 import com.company.project.exception.BizException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 
 /**
  * @author: chenyin
@@ -16,9 +14,11 @@ import javax.annotation.Resource;
  */
 @Service
 public class BusinessService {
-    @Resource
+
+    @Autowired
     private UserMapper userMapper;
-    @Resource
+
+    @Autowired
     private TransferRecordMapper transferRecordMapper;
 
     /**
@@ -61,7 +61,7 @@ public class BusinessService {
      */
     public boolean checkTransferStatus(String transactionId) {
         //根据transactionId查询转账记录 有转账记录 标识本地事务执行成功 即A扣钱成功
-        int count = transferRecordMapper.selectCount(new QueryWrapper<>(new TransferRecord().setTransactionId(transactionId)));
+        int count = transferRecordMapper.selectCount(transactionId);
         return count > 0;
 
     }

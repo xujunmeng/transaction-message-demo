@@ -24,9 +24,9 @@ import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -35,7 +35,7 @@ public class TransactionProducer  implements InitializingBean {
 
     private static TransactionMQProducer producer = new TransactionMQProducer("please_rename_unique_group_name");
 
-    @Resource
+    @Autowired
     private TransactionListenerImpl transactionListener;
 
     @Override

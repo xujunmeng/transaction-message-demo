@@ -1,11 +1,9 @@
 package com.company.project.biz.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -16,13 +14,11 @@ import lombok.experimental.Accessors;
  * @since 2019-05-10
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-public class User implements Serializable {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
