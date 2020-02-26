@@ -10,4 +10,6 @@ package com.company.project.biz.service;
  */
 public interface UserService {
 
+    int reduceMoney(Long userId, Long money);
+
 }

@@ -1,8 +1,8 @@
 package com.company.project.biz;
 
 import com.company.project.biz.entity.TransferRecord;
-import com.company.project.biz.mapper.TransferRecordMapper;
-import com.company.project.biz.mapper.UserMapper;
+import com.company.project.biz.service.TransferRecordService;
+import com.company.project.biz.service.UserService;
 import com.company.project.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class BusinessService {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Autowired
-    private TransferRecordMapper transferRecordMapper;
+    private TransferRecordService transferRecordService;
 
     /**
      * 转账操作 A扣钱，同时新增转账明细
@@ -42,11 +42,11 @@ public class BusinessService {
         transferRecord.setToUserId(toUserId);
         transferRecord.setRecordNo(businessNo);
 
-        transferRecordMapper.insert(transferRecord);
+        transferRecordService.insert(transferRecord);
 
         //执行A扣钱操作
         //update user set money = money - #{money} where id = #{userId} and money >= #{money}
-        int result = userMapper.reduceMoney(fromUserId, changeMoney);
+        int result = userService.reduceMoney(fromUserId, changeMoney);
         if (result <= 0) {
             throw new BizException("账户余额不足");
         }
@@ -61,7 +61,7 @@ public class BusinessService {
      */
     public boolean checkTransferStatus(String transactionId) {
         //根据transactionId查询转账记录 有转账记录 标识本地事务执行成功 即A扣钱成功
-        int count = transferRecordMapper.selectCount(transactionId);
+        int count = transferRecordService.selectCount(transactionId);
         return count > 0;
 
     }
