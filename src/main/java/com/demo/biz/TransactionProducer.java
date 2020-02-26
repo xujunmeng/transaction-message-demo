@@ -16,20 +16,19 @@
  */
 package com.demo.biz;
 
-import com.alibaba.fastjson.JSON;
-import com.demo.biz.entity.TransferRecord;
 import com.demo.constant.TransactionMessageCons;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class TransactionProducer  implements InitializingBean {
@@ -59,28 +58,14 @@ public class TransactionProducer  implements InitializingBean {
         }
     }
 
-
-    public void test() {
-        //单次转账唯一编号
-        String businessNo = UUID.randomUUID().toString();
-
-        //要发送的事务消息 设置转账人 被转账人 转账金额
-        TransferRecord transferRecord = new TransferRecord();
-        transferRecord.setFromUserId(1L);
-        transferRecord.setToUserId(2L);
-        transferRecord.setChangeMoney(100L);
-        transferRecord.setRecordNo(businessNo);
-
+    public TransactionSendResult sendMessageInTransaction(Message msg, Object arg) {
+        TransactionSendResult sendResult = null;
         try {
-            Message msg = new Message(TransactionMessageCons.topic, "tag", businessNo,
-                    JSON.toJSONString(transferRecord).getBytes(RemotingHelper.DEFAULT_CHARSET));
-            SendResult sendResult = producer.sendMessageInTransaction(msg, null);
-            System.out.println("prepare事务消息发送结果:"+sendResult.getSendStatus());
-        } catch (Exception e) {
+            sendResult = producer.sendMessageInTransaction(msg, arg);
+        } catch (MQClientException e) {
             e.printStackTrace();
         }
-
+        return sendResult;
     }
-
 
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- * 
+ *  相当于消息记录
  * </p>
  *
  * @author chenyin

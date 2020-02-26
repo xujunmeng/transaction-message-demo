@@ -1,12 +1,19 @@
 package com.demo.biz;
 
+import com.alibaba.fastjson.JSON;
 import com.demo.biz.entity.TransferRecord;
 import com.demo.biz.service.TransferRecordService;
 import com.demo.biz.service.UserService;
+import com.demo.constant.TransactionMessageCons;
 import com.demo.exception.BizException;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 /**
  * @author: chenyin
@@ -20,6 +27,9 @@ public class BusinessService {
 
     @Autowired
     private TransferRecordService transferRecordService;
+
+    @Autowired
+    private TransactionProducer transactionProducer;
 
     /**
      * 转账操作 A扣钱，同时新增转账明细
@@ -66,4 +76,25 @@ public class BusinessService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void handleReduceMoney() {
+        //单次转账唯一编号
+        String businessNo = UUID.randomUUID().toString();
+
+        //要发送的事务消息 设置转账人 被转账人 转账金额
+        TransferRecord transferRecord = new TransferRecord();
+        transferRecord.setFromUserId(1L);
+        transferRecord.setToUserId(2L);
+        transferRecord.setChangeMoney(100L);
+        transferRecord.setRecordNo(businessNo);
+
+        try {
+            Message msg = new Message(TransactionMessageCons.topic, "tag", businessNo,
+                    JSON.toJSONString(transferRecord).getBytes(RemotingHelper.DEFAULT_CHARSET));
+            SendResult sendResult = transactionProducer.sendMessageInTransaction(msg, null);
+            System.out.println("prepare事务消息发送结果:"+sendResult.getSendStatus());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
