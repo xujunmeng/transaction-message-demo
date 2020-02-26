@@ -58,13 +58,8 @@ public class TransactionProducer  implements InitializingBean {
         }
     }
 
-    public TransactionSendResult sendMessageInTransaction(Message msg, Object arg) {
-        TransactionSendResult sendResult = null;
-        try {
-            sendResult = producer.sendMessageInTransaction(msg, arg);
-        } catch (MQClientException e) {
-            e.printStackTrace();
-        }
+    public TransactionSendResult sendMessageInTransaction(Message msg, Object arg) throws MQClientException {
+        TransactionSendResult sendResult = producer.sendMessageInTransaction(msg, arg);
         return sendResult;
     }
 

@@ -12,4 +12,6 @@ public class TransactionMessageCons {
 
     public static final String topic = "transactionMessage_topic";
 
+    public static final String tag = "tag";
+
 }

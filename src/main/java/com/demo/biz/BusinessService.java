@@ -51,16 +51,7 @@ public class BusinessService {
         transferRecord.setTransactionId(transactionId);
         transferRecord.setToUserId(toUserId);
         transferRecord.setRecordNo(businessNo);
-
         transferRecordService.insert(transferRecord);
-
-        //执行A扣钱操作
-        //update user set money = money - #{money} where id = #{userId} and money >= #{money}
-        int result = userService.reduceMoney(fromUserId, changeMoney);
-        if (result <= 0) {
-            throw new BizException("账户余额不足");
-        }
-        System.out.println("转账成功,fromUserId:"+fromUserId+",toUserId:"+toUserId+",money:"+changeMoney);
         return true;
     }
     /**
@@ -78,21 +69,34 @@ public class BusinessService {
 
     @Transactional(rollbackFor = Exception.class)
     public void handleReduceMoney() {
+        Long fromUserId = 1L;
+        Long toUserId = 2L;
+        Long changeMoney = 100L;
+
+        //执行业务流程，操作本地数据库落库相关代码
+        //执行A扣钱操作
+        int result = userService.reduceMoney(fromUserId, changeMoney);
+        if (result <= 0) {
+            throw new BizException("账户余额不足");
+        }
+        System.out.println("转账成功, fromUserId : "+fromUserId+", toUserId : "+toUserId+", money : "+changeMoney);
+
+        //抛出消息操作
         //单次转账唯一编号
         String businessNo = UUID.randomUUID().toString();
-
         //要发送的事务消息 设置转账人 被转账人 转账金额
         TransferRecord transferRecord = new TransferRecord();
-        transferRecord.setFromUserId(1L);
-        transferRecord.setToUserId(2L);
-        transferRecord.setChangeMoney(100L);
+        transferRecord.setFromUserId(fromUserId);
+        transferRecord.setToUserId(toUserId);
+        transferRecord.setChangeMoney(changeMoney);
         transferRecord.setRecordNo(businessNo);
-
+        transferRecord.setKey(businessNo);
+        transferRecord.setTag(TransactionMessageCons.tag);
         try {
-            Message msg = new Message(TransactionMessageCons.topic, "tag", businessNo,
+            Message msg = new Message(TransactionMessageCons.topic, transferRecord.getTag(), transferRecord.getKey(),
                     JSON.toJSONString(transferRecord).getBytes(RemotingHelper.DEFAULT_CHARSET));
             SendResult sendResult = transactionProducer.sendMessageInTransaction(msg, null);
-            System.out.println("prepare事务消息发送结果:"+sendResult.getSendStatus());
+            System.out.println("prepare事务消息发送结果 : "+sendResult.getSendStatus());
         } catch (Exception e) {
             e.printStackTrace();
         }

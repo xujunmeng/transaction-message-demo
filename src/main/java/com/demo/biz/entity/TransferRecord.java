@@ -46,5 +46,9 @@ public class TransferRecord {
      */
     private String recordNo;
 
+    private String key;
+
+    private String tag;
+
 
 }
