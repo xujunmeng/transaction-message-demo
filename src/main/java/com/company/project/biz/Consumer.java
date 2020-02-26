@@ -16,6 +16,7 @@
  */
 package com.company.project.biz;
 
+import com.company.project.constant.TransactionMessageCons;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
@@ -33,7 +34,7 @@ public class Consumer {
         /*
          * Instantiate with specified consumer group name.
          */
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("please_rename_unique_group_name_4");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(TransactionMessageCons.consumerGroup);
 
         /*
          * Specify name server addresses.
@@ -46,7 +47,7 @@ public class Consumer {
          * }
          * </pre>
          */
-        consumer.setNamesrvAddr("111.231.110.149:9876");
+        consumer.setNamesrvAddr(TransactionMessageCons.namesrvAddr);
 
         /*
          * Specify where to start in case the specified consumer group is a brand new one.
@@ -56,7 +57,7 @@ public class Consumer {
         /*
          * Subscribe one more more topics to consume.
          */
-        consumer.subscribe("TransanctionMessage", "*");
+        consumer.subscribe(TransactionMessageCons.topic, "*");
 
         /*
          *  Register callback to execute on arrival of messages fetched from brokers.
