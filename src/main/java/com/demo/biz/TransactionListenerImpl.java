@@ -25,8 +25,14 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 public class TransactionListenerImpl implements TransactionListener {
+
+    private ConcurrentHashMap<String, Integer> countHashMap = new ConcurrentHashMap<>();
+
+    private final static int MAX_COUNT = 5;
 
     @Autowired
     private BusinessService businessService;
@@ -47,17 +53,30 @@ public class TransactionListenerImpl implements TransactionListener {
 
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-        LocalTransactionState state = LocalTransactionState.UNKNOW;
-        try {
-            boolean isCommit = businessService.checkTransferStatus(msg.getTransactionId());
-            if (isCommit) {
-                state = LocalTransactionState.COMMIT_MESSAGE;
-            } else {
-                state = LocalTransactionState.ROLLBACK_MESSAGE;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        String transactionId = msg.getTransactionId();
+
+        if (query(transactionId) > 0) {
+            return LocalTransactionState.COMMIT_MESSAGE;
         }
-        return state;
+        return rollBackOrUnknow(transactionId);
+    }
+
+    private int query(String transactionId) {
+        return businessService.checkTransferStatus(transactionId);
+    }
+
+    private LocalTransactionState rollBackOrUnknow(String transactionId) {
+        Integer num = countHashMap.get(transactionId);
+        if (num != null && ++num > MAX_COUNT) {
+            countHashMap.remove(transactionId);
+            return LocalTransactionState.ROLLBACK_MESSAGE;
+        }
+
+        if (num == null) {
+            num = 1;
+        }
+        countHashMap.put(transactionId, num);
+
+        return LocalTransactionState.UNKNOW;
     }
 }

@@ -60,10 +60,10 @@ public class BusinessService {
      * @param transactionId
      * @return
      */
-    public boolean checkTransferStatus(String transactionId) {
+    public int checkTransferStatus(String transactionId) {
         //根据transactionId查询转账记录 有转账记录 标识本地事务执行成功 即A扣钱成功
         int count = transferRecordService.selectCount(transactionId);
-        return count > 0;
+        return count;
 
     }
 
