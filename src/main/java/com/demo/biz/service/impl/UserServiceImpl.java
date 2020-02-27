@@ -20,7 +20,12 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public int reduceMoney(Long userId, Long money) {
-        return userMapper.reduceMoney(userId, money);
+    public int reduceMoney(Long fromUserId, Long changeMoney) {
+        return userMapper.reduceMoney(fromUserId, changeMoney);
+    }
+
+    @Override
+    public int addMoney(Long toUserId, Long changeMoney) {
+        return userMapper.addMoney(toUserId, changeMoney);
     }
 }

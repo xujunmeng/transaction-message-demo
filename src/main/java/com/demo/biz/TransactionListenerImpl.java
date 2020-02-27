@@ -62,7 +62,8 @@ public class TransactionListenerImpl implements TransactionListener {
     }
 
     private int query(String transactionId) {
-        return businessService.checkTransferStatus(transactionId);
+        int i = businessService.checkTransferStatus(transactionId);
+        return i;
     }
 
     private LocalTransactionState rollBackOrUnknow(String transactionId) {

@@ -10,6 +10,7 @@ package com.demo.biz.service;
  */
 public interface UserService {
 
-    int reduceMoney(Long userId, Long money);
+    int reduceMoney(Long fromUserId, Long changeMoney);
 
+    int addMoney(Long toUserId, Long changeMoney);
 }

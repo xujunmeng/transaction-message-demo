@@ -9,10 +9,16 @@
         id, money
     </sql>
 
+    <update id="addMoney">
+        update USER
+        set money = money + #{changeMoney}
+        where id = #{toUserId}
+    </update>
+
     <update id="reduceMoney">
         update user
-        set money = money - #{money}
-        where id = #{userId} and money >= #{money}
+        set money = money - #{changeMoney}
+        where id = #{fromUserId} and money >= #{changeMoney}
     </update>
 
 </mapper>

@@ -62,9 +62,22 @@ public class BusinessService {
      */
     public int checkTransferStatus(String transactionId) {
         //根据transactionId查询转账记录 有转账记录 标识本地事务执行成功 即A扣钱成功
-        int count = transferRecordService.selectCount(transactionId);
-        return count;
+        return transferRecordService.selectCount(transactionId);
+    }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void handleAddMoney(TransferRecord transferRecord) {
+        String transactionId = transferRecord.getTransactionId();
+        int i = transferRecordService.selectCount(transactionId);
+        if (i <= 0) {
+            System.out.println("当前增加金额操作无效, transactionId : " + transactionId);
+            return;
+        }
+
+
+        Long toUserId = transferRecord.getToUserId();
+        Long changeMoney = transferRecord.getChangeMoney();
+        userService.addMoney(toUserId, changeMoney);
     }
 
     @Transactional(rollbackFor = Exception.class)

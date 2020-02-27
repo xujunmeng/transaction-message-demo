@@ -16,6 +16,9 @@
  */
 package com.demo.biz;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
+import com.demo.biz.entity.TransferRecord;
 import com.demo.constant.TransactionMessageCons;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -23,58 +26,45 @@ import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * This example shows how to subscribe and consume messages using providing {@link DefaultMQPushConsumer}.
  */
+@Component
 public class Consumer {
 
-    public static void main(String[] args) throws InterruptedException, MQClientException {
+    @Autowired
+    private BusinessService businessService;
 
-        /*
-         * Instantiate with specified consumer group name.
-         */
+    @PostConstruct
+    public void defaultMQPushConsumer() {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(TransactionMessageCons.consumerGroup);
-
-        /*
-         * Specify name server addresses.
-         * <p/>
-         *
-         * Alternatively, you may specify name server addresses via exporting environmental variable: NAMESRV_ADDR
-         * <pre>
-         * {@code
-         * consumer.setNamesrvAddr("name-server1-ip:9876;name-server2-ip:9876");
-         * }
-         * </pre>
-         */
         consumer.setNamesrvAddr(TransactionMessageCons.namesrvAddr);
+        try {
+            consumer.subscribe(TransactionMessageCons.topic, TransactionMessageCons.tag);
+            consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+            consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+                for (MessageExt msg : msgs) {
+                    String msgStr = JSON.toJSONString(msg.getBody());
+                    System.out.println("收到消息 : " + msgStr);
 
-        /*
-         * Specify where to start in case the specified consumer group is a brand new one.
-         */
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+                    //执行加钱操作
+                    TransferRecord transferRecord = JSON.parseObject(msgStr, TransferRecord.class, new Feature[]{Feature.AllowISO8601DateFormat});
+                    businessService.handleAddMoney(transferRecord);
 
-        /*
-         * Subscribe one more more topics to consume.
-         */
-        consumer.subscribe(TransactionMessageCons.topic, "*");
+                }
+                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+            });
 
-        /*
-         *  Register callback to execute on arrival of messages fetched from brokers.
-         */
-        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
-            for (MessageExt msg : msgs) {
-                System.out.println("收到消息," + new String(msg.getBody()));
-                //Todo 执行加钱操作，比较简单，不写了
-            }
-            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-        });
+            consumer.start();
+            System.out.printf("Consumer Started.%n");
 
-        /*
-         *  Launch the consumer instance.
-         */
-        consumer.start();
-
-        System.out.printf("Consumer Started.%n");
+        } catch (MQClientException e) {
+            e.printStackTrace();
+        }
     }
 }
