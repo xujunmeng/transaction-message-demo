@@ -26,7 +26,12 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     }
 
     @Override
-    public int selectCount(String transactionId) {
-        return transferRecordMapper.selectCount(transactionId);
+    public int selectCountByTransactionId(String transactionId) {
+        return transferRecordMapper.selectCountByTransactionId(transactionId);
+    }
+
+    @Override
+    public int selectCountByRecordNo(String recordNo) {
+        return transferRecordMapper.selectCountByRecordNo(recordNo);
     }
 }

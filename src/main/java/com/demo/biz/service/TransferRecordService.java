@@ -14,6 +14,7 @@ public interface TransferRecordService {
 
     int insert(TransferRecord transferRecord);
 
-    int selectCount(String transactionId);
+    int selectCountByTransactionId(String transactionId);
 
+    int selectCountByRecordNo(String recordNo);
 }

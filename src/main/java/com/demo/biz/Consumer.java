@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.Charset;
 
 /**
  * This example shows how to subscribe and consume messages using providing {@link DefaultMQPushConsumer}.
@@ -49,7 +50,7 @@ public class Consumer {
             consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
             consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
                 for (MessageExt msg : msgs) {
-                    String msgStr = JSON.toJSONString(msg.getBody());
+                    String msgStr = new String (msg.getBody(), Charset.forName("UTF-8"));
                     System.out.println("收到消息 : " + msgStr);
 
                     //执行加钱操作

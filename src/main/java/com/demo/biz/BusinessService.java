@@ -62,15 +62,15 @@ public class BusinessService {
      */
     public int checkTransferStatus(String transactionId) {
         //根据transactionId查询转账记录 有转账记录 标识本地事务执行成功 即A扣钱成功
-        return transferRecordService.selectCount(transactionId);
+        return transferRecordService.selectCountByTransactionId(transactionId);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void handleAddMoney(TransferRecord transferRecord) {
-        String transactionId = transferRecord.getTransactionId();
-        int i = transferRecordService.selectCount(transactionId);
+        String recordNo = transferRecord.getRecordNo();
+        int i = transferRecordService.selectCountByRecordNo(recordNo);
         if (i <= 0) {
-            System.out.println("当前增加金额操作无效, transactionId : " + transactionId);
+            System.out.println("当前增加金额操作无效, recordNo : " + recordNo);
             return;
         }
 
@@ -105,17 +105,19 @@ public class BusinessService {
         transferRecord.setRecordNo(businessNo);
         transferRecord.setKey(businessNo);
         transferRecord.setTag(TransactionMessageCons.tag);
+        String transferRecordStr = JSON.toJSONString(transferRecord);
+        System.out.println("handleReduceMoney transferRecordStr : " + transferRecordStr);
         try {
             Message msg = new Message(TransactionMessageCons.topic, transferRecord.getTag(), transferRecord.getKey(),
-                    JSON.toJSONString(transferRecord).getBytes(RemotingHelper.DEFAULT_CHARSET));
+                    transferRecordStr.getBytes(RemotingHelper.DEFAULT_CHARSET));
             SendResult sendResult = transactionProducer.sendMessageInTransaction(msg, null);
-            System.out.println("prepare事务消息发送结果 : "+sendResult.getSendStatus());
+            System.out.println("prepare事务消息发送结果 : "+sendResult.getSendStatus() + ", 消息体 : " + transferRecordStr);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         //测试场景
-        int i = 1/0;
-        System.out.println(i);
+//        int i = 1/0;
+//        System.out.println(i);
     }
 }

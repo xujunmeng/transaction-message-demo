@@ -48,17 +48,19 @@ public class TransactionListenerImpl implements TransactionListener {
             System.out.println("转账失败,fromUserId:"+transferRecord.getFromUserId()+",toUserId:"+transferRecord.getToUserId()+",money:"+transferRecord.getChangeMoney());
             e.printStackTrace();
         }
+        System.out.println("executeLocalTransaction transferRecord : " + JSON.toJSONString(transferRecord));
         return state;
     }
 
     @Override
     public LocalTransactionState checkLocalTransaction(MessageExt msg) {
         String transactionId = msg.getTransactionId();
+        System.out.println("checkLocalTransaction transactionId : " + transactionId);
 
         if (query(transactionId) > 0) {
             return LocalTransactionState.COMMIT_MESSAGE;
         }
-        return rollBackOrUnknow(transactionId);
+        return LocalTransactionState.UNKNOW;
     }
 
     private int query(String transactionId) {
@@ -68,6 +70,8 @@ public class TransactionListenerImpl implements TransactionListener {
 
     private LocalTransactionState rollBackOrUnknow(String transactionId) {
         Integer num = countHashMap.get(transactionId);
+        System.out.println("rollBackOrUnknow transactionId : " + transactionId + ", num : " + num);
+
         if (num != null && ++num > MAX_COUNT) {
             countHashMap.remove(transactionId);
             return LocalTransactionState.ROLLBACK_MESSAGE;

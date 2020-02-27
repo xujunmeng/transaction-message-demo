@@ -34,10 +34,16 @@
       )
     </insert>
 
-    <select id="selectCount" resultType="java.lang.Integer">
+    <select id="selectCountByTransactionId" resultType="java.lang.Integer">
         SELECT count(1)
         FROM transfer_record
         WHERE transaction_id = #{transactionId}
+    </select>
+
+    <select id="selectCountByRecordNo" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM transfer_record
+        WHERE record_no = #{recordNo}
     </select>
 
 </mapper>
