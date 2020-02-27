@@ -100,5 +100,9 @@ public class BusinessService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        //测试场景
+        int i = 1/0;
+        System.out.println(i);
     }
 }
