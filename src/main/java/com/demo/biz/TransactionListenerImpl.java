@@ -36,18 +36,12 @@ public class TransactionListenerImpl implements TransactionListener {
         TransferRecord transferRecord = JSON.parseObject(msg.getBody(), TransferRecord.class);
         LocalTransactionState state = LocalTransactionState.UNKNOW;
         try {
-            boolean isCommit = businessService.doTransfer(transferRecord.getFromUserId(),transferRecord.getToUserId()
+            businessService.doTransfer(transferRecord.getFromUserId(),transferRecord.getToUserId()
                     ,transferRecord.getChangeMoney(),transferRecord.getRecordNo(),msg.getTransactionId());
-            if (isCommit) {
-                state = LocalTransactionState.COMMIT_MESSAGE;
-            } else {
-                state = LocalTransactionState.ROLLBACK_MESSAGE;
-            }
         } catch (Exception e) {
             System.out.println("转账失败,fromUserId:"+transferRecord.getFromUserId()+",toUserId:"+transferRecord.getToUserId()+",money:"+transferRecord.getChangeMoney());
             e.printStackTrace();
         }
-
         return state;
     }
 
