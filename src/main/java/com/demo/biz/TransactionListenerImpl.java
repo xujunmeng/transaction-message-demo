@@ -25,8 +25,6 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 @Component
 public class TransactionListenerImpl implements TransactionListener {
 
@@ -37,13 +35,7 @@ public class TransactionListenerImpl implements TransactionListener {
     public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
         TransferRecord transferRecord = JSON.parseObject(msg.getBody(), TransferRecord.class);
         LocalTransactionState state = LocalTransactionState.UNKNOW;
-        try {
-            businessService.doTransfer(transferRecord.getFromUserId(),transferRecord.getToUserId()
-                    ,transferRecord.getChangeMoney(),transferRecord.getRecordNo(),msg.getTransactionId());
-        } catch (Exception e) {
-            System.out.println("转账失败,fromUserId:"+transferRecord.getFromUserId()+",toUserId:"+transferRecord.getToUserId()+",money:"+transferRecord.getChangeMoney());
-            e.printStackTrace();
-        }
+
         System.out.println("executeLocalTransaction transferRecord : " + JSON.toJSONString(transferRecord));
         return state;
     }
