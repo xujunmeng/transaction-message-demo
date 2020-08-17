@@ -30,10 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class TransactionListenerImpl implements TransactionListener {
 
-    private ConcurrentHashMap<String, Integer> countHashMap = new ConcurrentHashMap<>();
-
-    private final static int MAX_COUNT = 5;
-
     @Autowired
     private BusinessService businessService;
 
@@ -66,22 +62,5 @@ public class TransactionListenerImpl implements TransactionListener {
     private int query(String transactionId) {
         int i = businessService.checkTransferStatus(transactionId);
         return i;
-    }
-
-    private LocalTransactionState rollBackOrUnknow(String transactionId) {
-        Integer num = countHashMap.get(transactionId);
-        System.out.println("rollBackOrUnknow transactionId : " + transactionId + ", num : " + num);
-
-        if (num != null && ++num > MAX_COUNT) {
-            countHashMap.remove(transactionId);
-            return LocalTransactionState.ROLLBACK_MESSAGE;
-        }
-
-        if (num == null) {
-            num = 1;
-        }
-        countHashMap.put(transactionId, num);
-
-        return LocalTransactionState.UNKNOW;
     }
 }
