@@ -41,7 +41,7 @@ public class TransactionListenerImpl implements TransactionListener {
         if (query(transferRecord.getRecordNo()) > 0) {
             return LocalTransactionState.COMMIT_MESSAGE;
         }
-        return LocalTransactionState.ROLLBACK_MESSAGE;
+        return LocalTransactionState.UNKNOW;
 
     }
 
