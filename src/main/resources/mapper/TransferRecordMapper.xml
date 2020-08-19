@@ -5,12 +5,11 @@
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="from_user_id" property="fromUserId" jdbcType="BIGINT"/>
         <result column="change_money" property="changeMoney" jdbcType="BIGINT"/>
-        <result column="transaction_id" property="transactionId" jdbcType="VARCHAR"/>
         <result column="to_user_id" property="toUserId" jdbcType="BIGINT"/>
         <result column="record_no" property="recordNo" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List" >
-        id, from_user_id, change_money, transaction_id, to_user_id, record_no
+        id, from_user_id, change_money, to_user_id, record_no
     </sql>
 
     <insert id="insert" parameterType="com.demo.biz.entity.TransferRecord">
@@ -19,7 +18,6 @@
       id,
       from_user_id,
       change_money,
-      transaction_id,
       to_user_id,
       record_no
       )
@@ -28,17 +26,10 @@
       #{id,jdbcType=BIGINT},
       #{fromUserId,jdbcType=BIGINT},
       #{changeMoney,jdbcType=BIGINT},
-      #{transactionId,jdbcType=VARCHAR},
       #{toUserId,jdbcType=BIGINT},
       #{recordNo,jdbcType=VARCHAR}
       )
     </insert>
-
-    <select id="selectCountByTransactionId" resultType="java.lang.Integer">
-        SELECT count(1)
-        FROM transfer_record
-        WHERE transaction_id = #{transactionId}
-    </select>
 
     <select id="selectCountByRecordNo" resultType="java.lang.Integer">
         SELECT COUNT(1)

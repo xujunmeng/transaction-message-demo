@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
-            <version>4.5.0</version>
+            <version>4.7.1</version>
         </dependency>
         <!--Spring Boot依赖-->
         <dependency>

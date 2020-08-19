@@ -48,7 +48,10 @@ public class TransactionProducer  implements InitializingBean {
             return thread;
         });
 
+
+        //设置事务状态回查异步执行线程池
         producer.setExecutorService(executorService);
+
         //设置回调检查监听器
         producer.setTransactionListener(transactionListener);
         try {

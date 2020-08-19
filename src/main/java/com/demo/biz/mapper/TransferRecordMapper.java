@@ -15,7 +15,5 @@ public interface TransferRecordMapper {
 
     int insert(TransferRecord transferRecord);
 
-    int selectCountByTransactionId(@Param("transactionId") String transactionId);
-
     int selectCountByRecordNo(@Param("recordNo") String recordNo);
 }

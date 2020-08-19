@@ -38,17 +38,15 @@ public class BusinessService {
      * @param toUserId      被转账人id
      * @param changeMoney   转账金额
      * @param businessNo    单次转账唯一业务标识
-     * @param transactionId 事务消息事务id
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
-    public boolean doTransfer(Long fromUserId, Long toUserId, Long changeMoney, String businessNo, String transactionId) throws Exception {
+    @Transactional
+    public boolean doTransfer(Long fromUserId, Long toUserId, Long changeMoney, String businessNo) {
         //插入转账记录明细 businessNo加唯一建 做去重操作 防止消息重试发送 导致本地事务多次执行 重复扣钱
         //转账记录中 记录 消息事务transactionId 用于后续状态回查
         TransferRecord transferRecord = new TransferRecord();
         transferRecord.setFromUserId(fromUserId);
         transferRecord.setChangeMoney(changeMoney);
-        transferRecord.setTransactionId(transactionId);
         transferRecord.setToUserId(toUserId);
         transferRecord.setRecordNo(businessNo);
         transferRecordService.insert(transferRecord);
@@ -57,15 +55,15 @@ public class BusinessService {
     /**
      * 检查本地扣钱事务执行状态
      *
-     * @param transactionId
+     * @param recordNo
      * @return
      */
-    public int checkTransferStatus(String transactionId) {
+    public int checkRecordNoExists(String recordNo) {
         //根据transactionId查询转账记录 有转账记录 标识本地事务执行成功 即A扣钱成功
-        return transferRecordService.selectCountByTransactionId(transactionId);
+        return transferRecordService.selectCountByRecordNo(recordNo);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void handleAddMoney(TransferRecord transferRecord) {
         String recordNo = transferRecord.getRecordNo();
         int i = transferRecordService.selectCountByRecordNo(recordNo);
@@ -80,7 +78,7 @@ public class BusinessService {
         userService.addMoney(toUserId, changeMoney);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void handleReduceMoney() {
         Long fromUserId = 1L;
         Long toUserId = 2L;
@@ -94,9 +92,14 @@ public class BusinessService {
         }
         System.out.println("转账成功, fromUserId : "+fromUserId+", toUserId : "+toUserId+", money : "+changeMoney);
 
+        String businessNo = UUID.randomUUID().toString();
+
+        //保存转账记录
+        doTransfer(fromUserId,toUserId, changeMoney,businessNo);
+
+
         //抛出消息操作
         //单次转账唯一编号
-        String businessNo = UUID.randomUUID().toString();
         //要发送的事务消息 设置转账人 被转账人 转账金额
         TransferRecord transferRecord = new TransferRecord();
         transferRecord.setFromUserId(fromUserId);
@@ -115,9 +118,5 @@ public class BusinessService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //测试场景
-//        int i = 1/0;
-//        System.out.println(i);
     }
 }
